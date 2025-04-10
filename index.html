@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple dummy HTML website example.">
+
+    <title>My Dummy Website</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden; /* Clear floats */
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #77aaff 3px solid;
+        }
+        header h1 {
+            text-align: center;
+            margin: 0;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+        nav {
+            background: #444;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        nav a:hover {
+            color: #77aaff;
+        }
+        main {
+            padding: 20px;
+            background: #fff;
+            margin-top: 20px;
+        }
+        main h2 {
+            color: #333;
+        }
+        footer {
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>Welcome to My Dummy Website</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="about">
+            <h2>About This Page</h2>
+            <p>This is a simple paragraph inside the main content area. It demonstrates a basic HTML structure. You can replace this text with your own content.</p>
+            <p>HTML uses tags like <code>&lt;p&gt;</code> for paragraphs, <code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code> for headings, and <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> for lists.</p>
+        </section>
+
+        <section id="features">
+            <h2>Features (Example List)</h2>
+            <ul>
+                <li>Basic HTML5 Structure</li>
+                <li>Semantic Elements (header, nav, main, footer)</li>
+                <li>Minimal Inline CSS</li>
+                <li>Placeholder Content</li>
+            </ul>
+        </section>
+
+        <section id="placeholder-image">
+             <h2>Placeholder Content</h2>
+             <p>You could add images here using the <code>&lt;img&gt;</code> tag, like this:</p>
+             <p><code>&lt;img src="your-image.jpg" alt="Description of your image"&gt;</code></p>
+             <p>(Note: You would need an actual image file named "your-image.jpg" in the same folder for it to display).</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 My Dummy Website. All rights reserved.</p>
+        <p>Created as an example.</p>
+    </footer>
+
+</body>
+</html>
