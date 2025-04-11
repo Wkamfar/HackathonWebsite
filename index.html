@@ -3,124 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A simple dummy HTML website example.">
+    <meta name="description" content="Website for the Trevor Hackathon event.">
 
-    <title>My Dummy Website</title>
+    <link rel="icon" type="image/png" href="icon.png">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+    <title>Trevor Hackathon</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // Add custom colors if needed, e.g., matching Trevor branding
+                        trevor: {
+                            red: '#cc0000', // Example red, adjust as needed
+                            orange: '#ff6600' // Example orange, adjust as needed
+                        }
+                    }
+                }
+            }
         }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden; /* Clear floats */
+    </script>
+
+    <style type="text/tailwindcss">
+        /* Add custom base styles or component styles here if needed */
+        /* Ensure smooth scrolling behavior is enabled */
+        html {
+            scroll-behavior: smooth;
         }
-        header {
-            background: #333;
-            color: #fff;
-            padding-top: 30px;
-            min-height: 70px;
-            border-bottom: #77aaff 3px solid;
+        /* Initially hide pages other than home */
+        #page-workshops,
+        #page-prizes {
+            display: none;
         }
-        header h1 {
-            text-align: center;
-            margin: 0;
-            padding-bottom: 10px;
-            text-transform: uppercase;
+        /* Style for the active navigation link */
+        nav a.active {
+            @apply text-orange-600 font-bold; /* Updated active style to match theme */
         }
-        nav {
-            background: #444;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
+        /* Ensure iframe/video resizes nicely */
+        .iframe-container,
+        .video-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000000; /* Black background for video container */
+            border-radius: 8px;
+            margin-bottom: 1rem;
         }
-        nav ul {
-            padding: 0;
-            margin: 0;
-            list-style: none;
+        .iframe-container iframe,
+        .video-container iframe,
+        .video-container video, /* Apply positioning to video tag */
+        .iframe-container .placeholder-content,
+        .video-container .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: flex; /* Keep for placeholders */
+            align-items: center; /* Keep for placeholders */
+            justify-content: center; /* Keep for placeholders */
+            text-align: center; /* Keep for placeholders */
+            color: #666; /* Keep for placeholders */
         }
-        nav ul li {
-            display: inline;
-            margin: 0 15px;
+         /* Ensure video element itself is block */
+        .video-container video {
+            display: block;
+            background: #000; /* Ensure video background is black */
         }
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
+        /* Specific styling for Google Form iframe container if needed */
+        .google-form-container {
+             padding-top: 75%;
+             background: #f0f0f0; /* Keep form background light */
         }
-        nav a:hover {
-            color: #77aaff;
-        }
-        main {
-            padding: 20px;
-            background: #fff;
-            margin-top: 20px;
-        }
-        main h2 {
-            color: #333;
-        }
-        footer {
-            background: #333;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-            margin-top: 20px;
-        }
+         .google-form-container iframe {
+             background: #ffffff; /* Ensure form iframe itself is white */
+         }
     </style>
 </head>
+<body class="bg-gray-100 font-sans">
 
-<body>
-    <header>
-        <div class="container">
-            <h1>Welcome to My Dummy Website</h1>
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <img src="TrevorLogo.png" alt="Trevor Logo" class="h-8 md:h-10 w-auto">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800 hidden sm:block">
+                Trevor Hackathon
+            </h1>
+            <nav>
+                <ul class="flex space-x-4 md:space-x-6">
+                    <li><a href="#" data-target="page-home" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200 active">Home</a></li>
+                    <li><a href="#" data-target="page-workshops" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200">Workshops</a></li>
+                    <li><a href="#" data-target="page-prizes" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200">Prizes</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
-    <nav>
-        <div class="container">
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
+    <div class="container mx-auto px-4 py-8">
+
+        <main id="page-home" class="page-content space-y-8 md:space-y-12">
+            <section class="text-center bg-gradient-to-r from-red-500 to-orange-500 text-white p-8 md:p-12 rounded-lg shadow-lg">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Welcome to the Trevor Hackathon!</h2>
+                <p class="text-lg md:text-xl mb-6">Innovate, Collaborate, Create. Join us for an exciting event!</p>
+                <a href="#" id="learn-more-btn" class="bg-white text-orange-600 font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition duration-200">Learn More</a>
+            </section>
+
+            <section>
+                 <div class="video-container rounded-lg shadow">
+                     <video
+                         controls
+                         playsinline
+                         class="absolute top-0 left-0 w-full h-full"
+                         src="Intro.mp4"
+                         aria-label="Event Highlights Video">
+                         Your browser does not support the video tag. You can <a href="Intro.mp4" class="text-orange-600 underline">download the video</a> instead.
+                     </video>
+                 </div>
+            </section>
+
+            <section id="about-hackathon" class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">What is a Hackathon?</h3>
+                <div class="md:flex md:space-x-6 space-y-4 md:space-y-0">
+                    <div class="md:w-1/2">
+                        <p class="text-gray-700 mb-4">A hackathon is an invention marathon where people come together to build cool projects, learn new skills, and collaborate intensively, usually over a short period like 24-48 hours, but in this case it is only from 8:30-5:00. There are workshops where people can hone desired skills and food is provided for all participating.</p>
+                        <p class="text-gray-700">It's a great place to bring ideas to life, meet like-minded individuals, and push your creative and technical boundaries.</p>
+                    </div>
+                    <div class="md:w-1/2 grid grid-cols-2 gap-4">
+                        <img src="WantYou.png" alt="People collaborating at a hackathon" class="rounded-lg object-cover w-full h-32 md:h-40 shadow">
+                        <img src="Hackathon.png" alt="Close up of code on a screen" class="rounded-lg object-cover w-full h-32 md:h-40 shadow">
+                    </div>
+                </div>
+            </section>
+
+             <section id="register-form" class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Register / Sign Up / Feedback</h3>
+                <p class="text-gray-700 mb-4">Use the form below to register for the event!</p>
+                <div class="iframe-container google-form-container bg-gray-200 rounded-lg shadow">
+                    <iframe
+                        src="https://docs.google.com/forms/d/e/1FAIpQLSdQ7oIUdY8oNnaTzjocJwzyY_HlPIF-gunlAZgr9Tu5DuC2kQ/viewform"
+                        width="100%"
+                        height="100%" /* Height is controlled by padding-top in CSS */
+                        frameborder="0"
+                        marginheight="0"
+                        marginwidth="0"
+                        title="Registration Form">
+                        Loading… </iframe>
+                    <div class="placeholder-content" style="display: none;">
+                         <p class="p-4">Your Google Form will be embedded here.<br>(Replace the iframe src above)</p>
+                    </div>
+                </div>
+            </section>
+
+             <section class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Contact Us</h3>
+                <p class="text-gray-700 mb-2">Have questions? Reach out to the organizing team:</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                    <li>
+                        <a href="mailto:shruthyl@trevor.org" class="text-orange-600 hover:underline">shruthyl@trevor.org</a> (Teacher Organizer)
+                    </li>
+                    <li>
+                        <a href="mailto:wk4123@trevor.org" class="text-orange-600 hover:underline">wk4123@trevor.org</a> (Student Organizer + Website Programmer)
+                    </li>
+                    <li><strong>Coordinators:</strong> William Kamfar, Jack Papalia, and Shruthy Lakshminarasimhan</li>
+                </ul>
+            </section>
+        </main>
+
+        <main id="page-workshops" class="page-content space-y-8 md:space-y-12">
+            <section class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Workshops & Schedule</h2>
+                <p class="text-center text-gray-600 mb-8">Learn new skills and technologies during the hackathon!</p>
+
+                <div class="border-b border-gray-200 pb-4 mb-4">
+                    <h3 class="text-xl font-semibold text-orange-600 mb-1">Introduction to Web Development</h3>
+                    <p class="text-sm text-gray-500 mb-2">Time: Saturday 10:00 AM | Location: Room A</p>
+                    <p class="text-gray-700">Get started with HTML, CSS, and JavaScript to build your first web page.</p>
+                </div>
+
+                <div class="border-b border-gray-200 pb-4 mb-4">
+                    <h3 class="text-xl font-semibold text-orange-600 mb-1">Python for Data Analysis</h3>
+                    <p class="text-sm text-gray-500 mb-2">Time: Saturday 1:00 PM | Location: Room B</p>
+                    <p class="text-gray-700">Learn the basics of using Python libraries like Pandas and NumPy for data exploration.</p>
+                </div>
+
+                 <div class="border-b border-gray-200 pb-4 mb-4">
+                    <h3 class="text-xl font-semibold text-orange-600 mb-1">Designing User Interfaces</h3>
+                    <p class="text-sm text-gray-500 mb-2">Time: Sunday 9:00 AM | Location: Main Hall</p>
+                    <p class="text-gray-700">Principles of effective UI/UX design and prototyping tools.</p>
+                </div>
+
+                <div class="pb-4 mb-4"> <h3 class="text-xl font-semibold text-orange-600 mb-1">Intro to AI/Machine Learning</h3> <p class="text-sm text-gray-500 mb-2">Time: Sunday 11:00 AM | Location: Room C</p> <p class="text-gray-700">Explore the fundamentals of AI and build a simple model.</p> </div>
+                <p class="text-center text-gray-600 mt-8">More details and full schedule coming soon!</p>
+            </section>
+        </main>
+
+        <main id="page-prizes" class="page-content space-y-8 md:space-y-12">
+             <section class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Prizes & Awards</h2>
+                <p class="text-center text-gray-600 mb-8">Showcase your project and win exciting prizes!</p>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200">
+                        <h3 class="text-xl font-semibold text-purple-600 mb-2">🏆 Overall Winner</h3>
+                        <p class="text-gray-700">Awarded to the most outstanding project demonstrating innovation, technical skill, and impact.</p>
+                        <p class="mt-3 font-bold text-lg">$1000 Cash Prize + Trophy</p> </div>
+
+                    <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200">
+                        <h3 class="text-xl font-semibold text-green-600 mb-2">💡 Most Innovative Idea</h3>
+                        <p class="text-gray-700">Recognizing the project with the most creative and original concept.</p>
+                         <p class="mt-3 font-bold text-lg">Tech Gadgets Bundle</p> </div>
+
+                    <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200">
+                        <h3 class="text-xl font-semibold text-red-600 mb-2">🎨 Best Design</h3>
+                        <p class="text-gray-700">Awarded for exceptional user interface (UI) and user experience (UX) design.</p>
+                         <p class="mt-3 font-bold text-lg">Software Subscriptions</p> </div>
+                </div>
+                 <p class="text-center text-gray-600 mt-8">Specific prize details and sponsor awards will be announced soon.</p>
+            </section>
+
+            <section class="bg-white p-6 rounded-lg shadow mt-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Meet the Judges/Facilitators</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 text-center">
+
+                    <div>
+                        <img src="lindow.jpg" alt="Judge 1 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Eric Lindow</h3> <p class="text-gray-600"></p> </div>
+
+                    <div>
+                        <img src="shruthy.jpg" alt="Judge 2 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Shruthy Lakshminarasimhan</h3> <p class="text-gray-600"></p> </div>
+
+                    <div>
+                        <img src="golanka.jpg" alt="Judge 3 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Stanley Golanka</h3> <p class="text-gray-600"></p> </div>
+
+                     <div>
+                        <img src="william.jpg" alt="Judge 4 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">William Kamfar</h3> <p class="text-gray-600"></p> </div>
+
+                    <div>
+                        <img src="jack.jpg" alt="Judge 5 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Jack Papalia</h3> <p class="text-gray-600"></p> </div>
+
+                    <div>
+                        <img src="sam.jpg" alt="Judge 6 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Sam Rabinor</h3> <p class="text-gray-600"></p> </div>
+
+                </div>
+                <p class="text-center text-gray-600 mt-8">Judges and Facilitators are subject to change!</p>
+            </section>
+        </main>
+
+    </div> <footer class="bg-gray-800 text-gray-400 mt-12 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; <span id="current-year"></span> Trevor Day School Hackathon. All rights reserved.</p>
+            <p class="text-sm">Made with ❤️ by the Hackathon Team</p>
         </div>
-    </nav>
-
-    <main class="container">
-        <section id="about">
-            <h2>About This Page</h2>
-            <p>This is a simple paragraph inside the main content area. It demonstrates a basic HTML structure. You can replace this text with your own content.</p>
-            <p>HTML uses tags like <code>&lt;p&gt;</code> for paragraphs, <code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code> for headings, and <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> for lists.</p>
-        </section>
-
-        <section id="features">
-            <h2>Features (Example List)</h2>
-            <ul>
-                <li>Basic HTML5 Structure</li>
-                <li>Semantic Elements (header, nav, main, footer)</li>
-                <li>Minimal Inline CSS</li>
-                <li>Placeholder Content</li>
-            </ul>
-        </section>
-
-        <section id="placeholder-image">
-             <h2>Placeholder Content</h2>
-             <p>You could add images here using the <code>&lt;img&gt;</code> tag, like this:</p>
-             <p><code>&lt;img src="your-image.jpg" alt="Description of your image"&gt;</code></p>
-             <p>(Note: You would need an actual image file named "your-image.jpg" in the same folder for it to display).</p>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 My Dummy Website. All rights reserved.</p>
-        <p>Created as an example.</p>
     </footer>
+
+    <script>
+        // --- Page Navigation Logic ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pageContents = document.querySelectorAll('.page-content');
+
+        function showPage(targetId) {
+            pageContents.forEach(page => {
+                page.style.display = 'none';
+            });
+            const targetPage = document.getElementById(targetId);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+            }
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('data-target') === targetId);
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const targetPageId = this.getAttribute('data-target');
+                showPage(targetPageId);
+                window.scrollTo(0, 0); // Scroll to top when changing main pages
+            });
+        });
+
+        // --- Smooth Scroll for "Learn More" Button ---
+        const learnMoreBtn = document.getElementById('learn-more-btn');
+        if (learnMoreBtn) {
+            learnMoreBtn.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default anchor jump
+
+                const targetSection = document.getElementById('about-hackathon');
+                const header = document.querySelector('header.sticky'); // Select the sticky header
+                const headerHeight = header ? header.offsetHeight : 0; // Get header height, default to 0 if not found
+                const extraPadding = 20; // Pixels of space below the header
+
+                if (targetSection) {
+                    const targetPosition = targetSection.offsetTop - headerHeight - extraPadding;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth' // Enable smooth scrolling
+                    });
+                }
+            });
+        }
+
+        // --- Footer Year ---
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // --- Initialize Page ---
+        showPage('page-home'); // Show home page by default
+
+    </script>
 
 </body>
 </html>
