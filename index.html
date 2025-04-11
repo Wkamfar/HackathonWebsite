@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Website for the Trevor Hackathon event.">
 
-    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png" onerror="this.href='https://placehold.co/32x32/000000/ffffff?text=T'">
 
-    <title>Trevor Hackathon</title>
+    <title>Trevor Hackathon with a Twist</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet"> <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -21,13 +21,10 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                        'press-start': ['"Press Start 2P"', 'cursive'],
                     },
                     colors: {
-                        // Add custom colors if needed, e.g., matching Trevor branding
-                        trevor: {
-                            red: '#cc0000', // Example red, adjust as needed
-                            orange: '#ff6600' // Example orange, adjust as needed
-                        }
+                        trevor: { red: '#cc0000', orange: '#ff6600' }
                     }
                 }
             }
@@ -35,98 +32,119 @@
     </script>
 
     <style type="text/tailwindcss">
-        /* Add custom base styles or component styles here if needed */
-        /* Ensure smooth scrolling behavior is enabled */
-        html {
-            scroll-behavior: smooth;
+        html {}
+        #page-workshops, #page-prizes, #page-register { display: none; }
+        nav a.active, #mobile-menu a.active { @apply text-orange-600 font-bold border-b-2 border-orange-600 pb-1; }
+        nav a:not(.active) { @apply border-b-2 border-transparent pb-1; }
+        #mobile-menu a { @apply block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50; }
+        #mobile-menu a:not(.active) { @apply border-b-2 border-transparent pb-1; }
+
+        .responsive-container { position: relative; overflow: hidden; width: 100%; background: #f0f0f0; border-radius: 8px; margin-bottom: 1rem; }
+        .responsive-container--16-9 { padding-top: 56.25%; background: #000000; }
+        .responsive-container--google-form { padding-top: 100%; min-height: 600px; }
+        .responsive-container iframe, .responsive-container video, .responsive-container .placeholder-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .responsive-container video { background: #000; }
+        .responsive-container .placeholder-content { display: flex; align-items: center; justify-content: center; text-align: center; color: #666; }
+
+        /* Game Container for positioning */
+        #game-container {
+            position: relative; /* Context for absolute positioning */
+            max-width: 480px; /* Match canvas width */
+            margin-left: auto;
+            margin-right: auto;
         }
-        /* Initially hide pages other than home */
-        #page-workshops,
-        #page-prizes {
-            display: none;
-        }
-        /* Style for the active navigation link */
-        nav a.active {
-            @apply text-orange-600 font-bold; /* Updated active style to match theme */
-        }
-        /* Ensure iframe/video resizes nicely */
-        .iframe-container,
-        .video-container {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            background: #000000; /* Black background for video container */
+
+        #gameCanvas {
+            display: block;
+            background: #1a1a2e;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            max-width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: crosshair;
         }
-        .iframe-container iframe,
-        .video-container iframe,
-        .video-container video, /* Apply positioning to video tag */
-        .iframe-container .placeholder-content,
-        .video-container .video-placeholder {
-            position: absolute;
-            top: 0;
-            left: 0;
+        #gameCanvas:fullscreen {
+            background-color: #000;
             width: 100%;
             height: 100%;
-            border: 0;
-            display: flex; /* Keep for placeholders */
-            align-items: center; /* Keep for placeholders */
-            justify-content: center; /* Keep for placeholders */
-            text-align: center; /* Keep for placeholders */
-            color: #666; /* Keep for placeholders */
+            object-fit: contain;
         }
-         /* Ensure video element itself is block */
-        .video-container video {
-            display: block;
-            background: #000; /* Ensure video background is black */
+        body:has(:fullscreen) { overflow: hidden; }
+
+        /* Fullscreen Button Styling */
+        #fullscreen-btn {
+            position: absolute;
+            top: 0.5rem; /* 8px */
+            right: 0.5rem; /* 8px */
+            z-index: 20;
+            opacity: 0; /* Hidden by default */
+            pointer-events: none; /* Not clickable when hidden */
+            transition: opacity 0.3s ease-in-out;
         }
-        /* Specific styling for Google Form iframe container if needed */
-        .google-form-container {
-             padding-top: 75%;
-             background: #f0f0f0; /* Keep form background light */
+        /* Show button on container hover */
+        #game-container:hover #fullscreen-btn {
+            opacity: 1;
+            pointer-events: auto;
         }
-         .google-form-container iframe {
-             background: #ffffff; /* Ensure form iframe itself is white */
-         }
+
+        .java-code-block { background-color: #2d2d2d; color: #f1f1f1; padding: 1rem; border-radius: 8px; font-family: 'Courier New', Courier, monospace; font-size: 0.875rem; line-height: 1.5; overflow-x: auto; max-height: 400px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .java-code-block .comment { color: #6a9955; }
+        .java-code-block .keyword { color: #569cd6; }
+        .java-code-block .class-name { color: #4ec9b0; }
+        .java-code-block .number { color: #b5cea8; }
+        .java-code-block .string { color: #ce9178; }
+        .java-code-block .method { color: #dcdcaa; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
 
     <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <img src="TrevorLogo.png" alt="Trevor Logo" class="h-8 md:h-10 w-auto">
-            <h1 class="text-xl md:text-2xl font-bold text-gray-800 hidden sm:block">
-                Trevor Hackathon
-            </h1>
-            <nav>
-                <ul class="flex space-x-4 md:space-x-6">
-                    <li><a href="#" data-target="page-home" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200 active">Home</a></li>
-                    <li><a href="#" data-target="page-workshops" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200">Workshops</a></li>
-                    <li><a href="#" data-target="page-prizes" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200">Prizes</a></li>
-                </ul>
-            </nav>
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <div class="flex items-center space-x-2 flex-shrink-0">
+                    <img src="TrevorLogo.png" alt="Trevor Logo" class="h-8 md:h-10 w-auto" onerror="this.onerror=null; this.src='https://placehold.co/100x40/cc0000/ffffff?text=Trevor';">
+                    <div class="flex flex-col">
+                         <h1 class="text-lg md:text-xl font-bold text-gray-800 leading-tight">Trevor Hackathon!</h1>
+                         <span class="text-xs md:text-sm text-orange-600 font-semibold">May 10th, 2025</span>
+                    </div>
+                </div>
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-3 md:space-x-5 text-sm md:text-base">
+                        <li><a href="#" data-target="page-home" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200 active">Home</a></li>
+                        <li><a href="#" data-target="page-workshops" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200">Workshops</a></li>
+                        <li><a href="#" data-target="page-prizes" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200">Prizes</a></li>
+                        <li><a href="#" data-target="page-register" class="nav-link text-gray-600 hover:text-orange-600 transition duration-200">Register</a></li>
+                    </ul>
+                </nav>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg id="icon-open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg id="icon-close" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" data-target="page-home" class="nav-link mobile-nav-link active">Home</a>
+                <a href="#" data-target="page-workshops" class="nav-link mobile-nav-link">Workshops</a>
+                <a href="#" data-target="page-prizes" class="nav-link mobile-nav-link">Prizes</a>
+                <a href="#" data-target="page-register" class="nav-link mobile-nav-link">Register</a>
+            </div>
         </div>
     </header>
 
     <div class="container mx-auto px-4 py-8">
-
         <main id="page-home" class="page-content space-y-8 md:space-y-12">
-            <section class="text-center bg-gradient-to-r from-red-500 to-orange-500 text-white p-8 md:p-12 rounded-lg shadow-lg">
+            <section class="text-center bg-gradient-to-r from-trevor-red via-trevor-orange to-orange-400 text-white p-8 md:p-12 rounded-lg shadow-lg">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">Welcome to the Trevor Hackathon!</h2>
-                <p class="text-lg md:text-xl mb-6">Innovate, Collaborate, Create. Join us for an exciting event!</p>
-                <a href="#" id="learn-more-btn" class="bg-white text-orange-600 font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition duration-200">Learn More</a>
+                <p class="text-lg md:text-xl mb-6">Innovate, Collaborate, Create. Join us on May 10th, 2025!</p>
+                <a href="#about-hackathon" id="learn-more-btn" class="bg-white text-orange-600 font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition duration-200">Learn More</a>
             </section>
 
             <section>
-                 <div class="video-container rounded-lg shadow">
-                     <video
-                         controls
-                         playsinline
-                         class="absolute top-0 left-0 w-full h-full"
-                         src="Intro.mp4"
-                         aria-label="Event Highlights Video">
+                 <div class="responsive-container responsive-container--16-9 rounded-lg shadow">
+                     <video controls playsinline class="absolute top-0 left-0 w-full h-full" src="Intro.mp4" aria-label="Event Highlights Video" poster="https://placehold.co/1920x1080/000000/ffffff?text=Intro+Video">
                          Your browser does not support the video tag. You can <a href="Intro.mp4" class="text-orange-600 underline">download the video</a> instead.
                      </video>
                  </div>
@@ -136,136 +154,256 @@
                 <h3 class="text-2xl font-semibold text-gray-800 mb-4">What is a Hackathon?</h3>
                 <div class="md:flex md:space-x-6 space-y-4 md:space-y-0">
                     <div class="md:w-1/2">
-                        <p class="text-gray-700 mb-4">A hackathon is an invention marathon where people come together to build cool projects, learn new skills, and collaborate intensively, usually over a short period like 24-48 hours, but in this case it is only from 8:30-5:00. There are workshops where people can hone desired skills and food is provided for all participating.</p>
-                        <p class="text-gray-700">It's a great place to bring ideas to life, meet like-minded individuals, and push your creative and technical boundaries.</p>
+                        <p class="text-gray-700 mb-4">A hackathon is an invention marathon where people come together to build cool projects, learn new skills, and collaborate intensively. Our event runs from 8:30 AM to 5:00 PM on May 10th, 2025.</p>
+                        <p class="text-gray-700 mb-4">It's a fantastic opportunity to bring ideas to life, meet like-minded individuals, and push your creative and technical boundaries. We offer workshops to help you learn, and food is provided!</p>
+                        <p class="text-gray-700 font-medium">Explore the paths and competition levels below:</p>
                     </div>
                     <div class="md:w-1/2 grid grid-cols-2 gap-4">
-                        <img src="WantYou.png" alt="People collaborating at a hackathon" class="rounded-lg object-cover w-full h-32 md:h-40 shadow">
-                        <img src="Hackathon.png" alt="Close up of code on a screen" class="rounded-lg object-cover w-full h-32 md:h-40 shadow">
+                         <img src="Hackathon.png" alt="People collaborating" class="rounded-lg object-cover w-full h-32 md:h-40 shadow" onerror="this.onerror=null; this.src='https://placehold.co/300x200/cccccc/666666?text=Collaboration';">
+                        <img src="hackathon2.png" alt="Code on screen" class="rounded-lg object-cover w-full h-32 md:h-40 shadow" onerror="this.onerror=null; this.src='https://placehold.co/300x200/cccccc/666666?text=Coding';">
                     </div>
                 </div>
             </section>
 
-             <section id="register-form" class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Register / Sign Up / Feedback</h3>
-                <p class="text-gray-700 mb-4">Use the form below to register for the event!</p>
-                <div class="iframe-container google-form-container bg-gray-200 rounded-lg shadow">
-                    <iframe
-                        src="https://docs.google.com/forms/d/e/1FAIpQLSdQ7oIUdY8oNnaTzjocJwzyY_HlPIF-gunlAZgr9Tu5DuC2kQ/viewform"
-                        width="100%"
-                        height="100%" /* Height is controlled by padding-top in CSS */
-                        frameborder="0"
-                        marginheight="0"
-                        marginwidth="0"
-                        title="Registration Form">
-                        Loading… </iframe>
-                    <div class="placeholder-content" style="display: none;">
-                         <p class="p-4">Your Google Form will be embedded here.<br>(Replace the iframe src above)</p>
+            <section id="paths-and-levels" class="mt-8 md:mt-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="bg-white p-6 rounded-lg shadow w-full h-full">
+                             <h4 class="text-xl font-semibold text-gray-800 mb-3 text-center">🎮 Game Dev Path</h4>
+                             <p class="text-gray-700 text-sm">Interested in creating your own game? Learn about game engines (like Unity, Godot, or web-based ones), design principles, and coding interactive experiences. Great for visual thinkers and storytellers!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-white p-6 rounded-lg shadow w-full h-full">
+                             <h4 class="text-xl font-semibold text-gray-800 mb-3 text-center">⚙️ Rube Goldberg Path</h4>
+                             <p class="text-gray-700 text-sm">Love complex contraptions and creative problem-solving? Design and build a Rube Goldberg machine, either physically or digitally! Focus on mechanics, physics, and chain reactions.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow w-full mt-8">
+                     <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Competition Levels</h3>
+                     <p class="text-gray-700 mb-3 text-sm text-center">Choose the level that best fits your experience for your chosen path:</p>
+                     <ul class="space-y-2 list-disc list-inside text-gray-600 text-sm max-w-xl mx-auto">
+                         <li><strong>Beginner:</strong> New to coding, game dev, or complex machines? Start here! Focus on learning the basics and building a simple, functional project (Processing or P5).</li>
+                         <li><strong>Intermediate:</strong> Have some experience? Tackle a more complex challenge, refine your skills, and add more features or steps (Python).</li>
+                         <li><strong>Advanced:</strong> Ready to innovate? Push the boundaries with advanced techniques, complex interactions/mechanics, and polished execution (Any Platform or Langauge).</li>
+                     </ul>
+                </div>
+            </section>
+
+            <section id="theme-announcement" class="bg-white p-6 rounded-lg shadow text-center mt-12">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-3">🚀 Hackathon Theme</h3>
+                <p class="text-gray-700">Get ready for a surprise! The official theme for the hackathon will be announced at the start of the event on May 10th.</p>
+                <p class="text-gray-600 text-sm mt-2">This keeps the challenge fresh and encourages spontaneous creativity! Our example below uses the quirky theme: <span class="font-semibold text-orange-600">"Cosmic Kittens vs. Yarn Asteroids"</span>.</p>
+            </section>
+
+            <section id="example-submission" class="bg-white p-6 rounded-lg shadow mt-12">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Example Submission Showcase</h3>
+                <p class="text-center text-gray-600 mb-8">Here's a conceptual example of what a submission might look like, combining code and a playable demo. This uses the theme <span class="font-semibold text-orange-600">"Cosmic Kittens vs. Yarn Asteroids"</span>.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-700 mb-3">Code Snippet (Conceptual Java Translation)</h4>
+                        <pre class="java-code-block"><code><span class="comment">// --- Conceptual Java Translation of the JS Game ---</span>
+<span class="comment">// Note: Assumes a Swing/AWT context (JPanel, Graphics)</span>
+<span class="comment">// Input handling and game loop thread are simplified.</span>
+
+<span class="keyword">import</span> java.awt.*;
+<span class="keyword">import</span> java.awt.event.*;
+<span class="keyword">import</span> javax.swing.*;
+<span class="keyword">import</span> java.util.ArrayList;
+<span class="keyword">import</span> java.util.HashSet;
+<span class="keyword">import</span> java.util.List;
+<span class="keyword">import</span> java.util.Set;
+
+<span class="keyword">public class</span> <span class="class-name">GamePanel</span> <span class="keyword">extends</span> <span class="class-name">JPanel</span> <span class="keyword">implements</span> <span class="class-name">Runnable</span> {
+
+    <span class="keyword">private</span> <span class="class-name">Player</span> player;
+    <span class="keyword">private</span> <span class="class-name">List</span>&lt;<span class="class-name">Bullet</span>&gt; bullets;
+    <span class="keyword">private</span> <span class="class-name">List</span>&lt;<span class="class-name">Asteroid</span>&gt; asteroids;
+    <span class="keyword">private int</span> score;
+    <span class="keyword">private int</span> lives;
+    <span class="keyword">private</span> <span class="class-name">String</span> gameState; <span class="comment">// "playing", "gameOver"</span>
+    <span class="keyword">private</span> <span class="class-name">Set</span>&lt;<span class="class-name">Integer</span>&gt; keysPressed;
+
+    <span class="keyword">private float</span> currentAsteroidSpeed;
+    <span class="keyword">private int</span> nextSpeedIncreaseScore;
+    <span class="keyword">private int</span> asteroidSpawnTimer;
+
+    <span class="keyword">private static final float</span> INITIAL_ASTEROID_SPEED = <span class="number">0.8f</span>;
+    <span class="keyword">private static final float</span> ASTEROID_SPEED_INC = <span class="number">0.1f</span>;
+    <span class="keyword">private static final int</span> SCORE_THRESHOLD_INC = <span class="number">300</span>;
+    <span class="keyword">private static final int</span> ASTEROID_SPAWN_RATE = <span class="number">100</span>;
+
+    <span class="keyword">public</span> <span class="method">GamePanel</span>() {
+        keysPressed = <span class="keyword">new</span> <span class="class-name">HashSet</span>&lt;&gt;();
+        <span class="comment">// Game starts automatically now</span>
+        <span class="method">setupGame</span>();
+        <span class="comment">// Add KeyListener, setPreferredSize, etc.</span>
+        <span class="comment">// Start game loop thread...</span>
+    }
+
+    <span class="comment">// startGame() method removed</span>
+
+    <span class="keyword">public void</span> <span class="method">setupGame</span>() {
+        player = <span class="keyword">new</span> <span class="class-name">Player</span>(getWidth() / <span class="number">2</span>, getHeight() / <span class="number">2</span>);
+        bullets = <span class="keyword">new</span> <span class="class-name">ArrayList</span>&lt;&gt;();
+        asteroids = <span class="keyword">new</span> <span class="class-name">ArrayList</span>&lt;&gt;();
+        score = <span class="number">0</span>;
+        lives = player.lives;
+        currentAsteroidSpeed = INITIAL_ASTEROID_SPEED;
+        nextSpeedIncreaseScore = SCORE_THRESHOLD_INC;
+        asteroidSpawnTimer = <span class="number">0</span>;
+        gameState = <span class="string">"playing"</span>;
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) {
+            asteroids.<span class="method">add</span>(<span class="keyword">new</span> <span class="class-name">Asteroid</span>(getWidth(), getHeight(), currentAsteroidSpeed));
+        }
+    }
+
+    @<span class="class-name">Override</span>
+    <span class="keyword">public void</span> <span class="method">run</span>() {
+        <span class="keyword">while</span> (<span class="keyword">true</span>) {
+            <span class="keyword">if</span> (gameState.<span class="method">equals</span>(<span class="string">"playing"</span>)) {
+                <span class="method">updateGame</span>();
+                <span class="method">checkCollisions</span>();
+            } <span class="keyword">else if</span> (gameState.<span class="method">equals</span>(<span class="string">"gameOver"</span>)) {
+                <span class="keyword">if</span> (keysPressed.<span class="method">contains</span>(<span class="class-name">KeyEvent</span>.VK_R)) {
+                    <span class="method">setupGame</span>(); <span class="comment">// Restart</span>
+                }
+            }
+            <span class="method">repaint</span>();
+            <span class="comment">// Thread.sleep(16);</span>
+        }
+    }
+
+     <span class="keyword">public void</span> <span class="method">updateGame</span>() { <span class="comment">/* ... */</span> }
+     <span class="keyword">public void</span> <span class="method">checkCollisions</span>() { <span class="comment">/* ... */</span> }
+
+    @<span class="class-name">Override</span>
+    <span class="keyword">protected void</span> <span class="method">paintComponent</span>(<span class="class-name">Graphics</span> g) {
+        <span class="keyword">super</span>.<span class="method">paintComponent</span>(g);
+        <span class="class-name">Graphics2D</span> g2d = (<span class="class-name">Graphics2D</span>) g;
+        g2d.<span class="method">setRenderingHint</span>(<span class="class-name">RenderingHints</span>.KEY_ANTIALIASING, <span class="class-name">RenderingHints</span>.VALUE_ANTIALIAS_ON);
+
+        g2d.<span class="method">setColor</span>(<span class="keyword">new</span> <span class="class-name">Color</span>(<span class="number">26</span>, <span class="number">26</span>, <span class="number">46</span>));
+        g2d.<span class="method">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, getWidth(), getHeight());
+
+        <span class="comment">// No need to check for "uninitialized" state here anymore</span>
+        player.<span class="method">draw</span>(g2d);
+        asteroids.<span class="method">forEach</span>(a -&gt; a.<span class="method">draw</span>(g2d));
+        bullets.<span class="method">forEach</span>(b -&gt; b.<span class="method">draw</span>(g2d));
+        <span class="comment">// Draw UI</span>
+        g2d.<span class="method">setColor</span>(<span class="class-name">Color</span>.WHITE);
+        g2d.<span class="method">setFont</span>(<span class="keyword">new</span> <span class="class-name">Font</span>(<span class="string">"Press Start 2P"</span>, <span class="class-name">Font</span>.PLAIN, <span class="number">16</span>));
+        g2d.<span class="method">drawString</span>(<span class="string">"Score: "</span> + score, <span class="number">10</span>, <span class="number">25</span>);
+        g2d.<span class="method">drawString</span>(<span class="string">"Lives: "</span> + lives, getWidth() - <span class="number">100</span>, <span class="number">25</span>);
+
+        <span class="keyword">if</span> (gameState.<span class="method">equals</span>(<span class="string">"gameOver"</span>)) {
+             <span class="comment">// Draw Game Over Text...</span>
+        }
+    }
+    <span class="comment">// --- Inner Classes (Player, Bullet, Asteroid as before) ---</span>
+}</code></pre>
+                        <p class="text-xs text-gray-500 mt-2">Note: This conceptual Java code illustrates the structure. The playable demo uses JavaScript.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-700 mb-3">Playable Demo (HTML5/JS)</h4>
+                        <div id="game-container" class="relative">
+                             <canvas id="gameCanvas" width="480" height="360"></canvas>
+                             <button id="fullscreen-btn" title="Toggle Fullscreen" class="p-1 bg-gray-700 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-75 transition">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v4m0 0h-4m4 0l-5-5" />
+                                 </svg>
+                             </button>
+                        </div>
+                        <div class="text-center mt-4 space-y-1">
+                             <p class="text-sm font-semibold font-press-start text-gray-700">Controls:</p>
+                             <p class="text-xs text-gray-600 font-press-start">W: Thrust | A/D: Turn | F: Shoot</p>
+                             <p class="text-xs text-gray-500 mt-2">(Click game window to ensure controls are active)</p>
+                        </div>
                     </div>
                 </div>
             </section>
 
-             <section class="bg-white p-6 rounded-lg shadow">
+            <section class="bg-white p-6 rounded-lg shadow">
                 <h3 class="text-2xl font-semibold text-gray-800 mb-4">Contact Us</h3>
                 <p class="text-gray-700 mb-2">Have questions? Reach out to the organizing team:</p>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
-                    <li>
-                        <a href="mailto:shruthyl@trevor.org" class="text-orange-600 hover:underline">shruthyl@trevor.org</a> (Teacher Organizer)
-                    </li>
-                    <li>
-                        <a href="mailto:wk4123@trevor.org" class="text-orange-600 hover:underline">wk4123@trevor.org</a> (Student Organizer + Website Programmer)
-                    </li>
+                    <li><a href="mailto:shruthyl@trevor.org" class="text-orange-600 hover:underline">shruthyl@trevor.org</a> (Teacher Organizer)</li>
+                    <li><a href="mailto:wk4123@trevor.org" class="text-orange-600 hover:underline">wk4123@trevor.org</a> (Student Organizer + Website Programmer)</li>
                     <li><strong>Coordinators:</strong> William Kamfar, Jack Papalia, and Shruthy Lakshminarasimhan</li>
                 </ul>
             </section>
         </main>
 
         <main id="page-workshops" class="page-content space-y-8 md:space-y-12">
-            <section class="bg-white p-6 rounded-lg shadow">
+           <section class="bg-white p-6 rounded-lg shadow">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Workshops & Schedule</h2>
-                <p class="text-center text-gray-600 mb-8">Learn new skills and technologies during the hackathon!</p>
-
-                <div class="border-b border-gray-200 pb-4 mb-4">
-                    <h3 class="text-xl font-semibold text-orange-600 mb-1">Introduction to Web Development</h3>
-                    <p class="text-sm text-gray-500 mb-2">Time: Saturday 10:00 AM | Location: Room A</p>
-                    <p class="text-gray-700">Get started with HTML, CSS, and JavaScript to build your first web page.</p>
-                </div>
-
-                <div class="border-b border-gray-200 pb-4 mb-4">
-                    <h3 class="text-xl font-semibold text-orange-600 mb-1">Python for Data Analysis</h3>
-                    <p class="text-sm text-gray-500 mb-2">Time: Saturday 1:00 PM | Location: Room B</p>
-                    <p class="text-gray-700">Learn the basics of using Python libraries like Pandas and NumPy for data exploration.</p>
-                </div>
-
-                 <div class="border-b border-gray-200 pb-4 mb-4">
-                    <h3 class="text-xl font-semibold text-orange-600 mb-1">Designing User Interfaces</h3>
-                    <p class="text-sm text-gray-500 mb-2">Time: Sunday 9:00 AM | Location: Main Hall</p>
-                    <p class="text-gray-700">Principles of effective UI/UX design and prototyping tools.</p>
-                </div>
-
-                <div class="pb-4 mb-4"> <h3 class="text-xl font-semibold text-orange-600 mb-1">Intro to AI/Machine Learning</h3> <p class="text-sm text-gray-500 mb-2">Time: Sunday 11:00 AM | Location: Room C</p> <p class="text-gray-700">Explore the fundamentals of AI and build a simple model.</p> </div>
-                <p class="text-center text-gray-600 mt-8">More details and full schedule coming soon!</p>
+                <p class="text-center text-gray-600 mb-8">Learn new skills and technologies during the hackathon! (Schedule subject to change)</p>
+                <div class="border-b border-gray-200 pb-4 mb-4"><h3 class="text-xl font-semibold text-orange-600 mb-1">Emulation and Raspberry PI</h3><p class="text-sm text-gray-500 mb-2">Time: 9:00 AM | Location: 501</p><p class="text-gray-700">Learn how to emulate retro games on a Raspberry PI.</p></div>
+                <div class="border-b border-gray-200 pb-4 mb-4"><h3 class="text-xl font-semibold text-orange-600 mb-1">Metal Working and Maker Lab</h3><p class="text-sm text-gray-500 mb-2">Time: 10:30 AM | Location: 502</p><p class="text-gray-700">Learn how to metal work and familiarize yourself with the upper school maker space.</p></div>
+                <div class="border-b border-gray-200 pb-4 mb-4"><h3 class="text-xl font-semibold text-orange-600 mb-1">Fashion</h3><p class="text-sm text-gray-500 mb-2">Time: 1:00 PM | Location: 504</p><p class="text-gray-700">Learn about fashion and how to design clothes.</p></div>
+                <div class="pb-4 mb-4"><h3 class="text-xl font-semibold text-orange-600 mb-1">Programming Help</h3><p class="text-sm text-gray-500 mb-2">Time: 3:00 PM | Location: 505</p><p class="text-gray-700">Get programming help on any problems.</p></div>
+                <p class="text-center text-gray-600 mt-8">Full schedule and workshop details coming soon!</p>
             </section>
         </main>
 
         <main id="page-prizes" class="page-content space-y-8 md:space-y-12">
-             <section class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Prizes & Awards</h2>
-                <p class="text-center text-gray-600 mb-8">Showcase your project and win exciting prizes!</p>
-
-                <div class="grid md:grid-cols-3 gap-6">
-                    <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200">
-                        <h3 class="text-xl font-semibold text-purple-600 mb-2">🏆 Overall Winner</h3>
-                        <p class="text-gray-700">Awarded to the most outstanding project demonstrating innovation, technical skill, and impact.</p>
-                        <p class="mt-3 font-bold text-lg">$1000 Cash Prize + Trophy</p> </div>
-
-                    <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200">
-                        <h3 class="text-xl font-semibold text-green-600 mb-2">💡 Most Innovative Idea</h3>
-                        <p class="text-gray-700">Recognizing the project with the most creative and original concept.</p>
-                         <p class="mt-3 font-bold text-lg">Tech Gadgets Bundle</p> </div>
-
-                    <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200">
-                        <h3 class="text-xl font-semibold text-red-600 mb-2">🎨 Best Design</h3>
-                        <p class="text-gray-700">Awarded for exceptional user interface (UI) and user experience (UX) design.</p>
-                         <p class="mt-3 font-bold text-lg">Software Subscriptions</p> </div>
-                </div>
-                 <p class="text-center text-gray-600 mt-8">Specific prize details and sponsor awards will be announced soon.</p>
-            </section>
-
+            <section class="bg-white p-6 rounded-lg shadow">
+                 <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Prizes & Awards</h2>
+                 <p class="text-center text-gray-600 mb-8">Showcase your project and win exciting prizes!</p>
+                 <div class="grid md:grid-cols-3 gap-6">
+                     <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200"><h3 class="text-xl font-semibold text-purple-600 mb-2">🏆 Overall Winner (Advanced)</h3><p class="text-gray-700">Most outstanding project from the advanced level.</p><p class="mt-3 font-bold text-lg">???</p></div>
+                     <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200"><h3 class="text-xl font-semibold text-blue-600 mb-2">🏆 Overall Winner (Intermediate)</h3><p class="text-gray-700">Most outstanding project from the intermediate level.</p><p class="mt-3 font-bold text-lg">???</p></div>
+                     <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200"><h3 class="text-xl font-semibold text-green-600 mb-2">🏆 Overall Winner (Beginner)</h3><p class="text-gray-700">Most outstanding project from the beginner level.</p><p class="mt-3 font-bold text-lg">???</p></div>
+                     <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200"><h3 class="text-xl font-semibold text-red-600 mb-2">💡 Most Innovative Idea</h3><p class="text-gray-700">Recognizing the project with the most creative concept across all levels.</p><p class="mt-3 font-bold text-lg">???</p></div>
+                     <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200"><h3 class="text-xl font-semibold text-yellow-600 mb-2">⚙️ Best Rube Goldberg</h3><p class="text-gray-700">Most impressive and functional contraption.</p><p class="mt-3 font-bold text-lg">???</p></div>
+                     <div class="border border-gray-200 p-4 rounded-lg text-center hover:shadow-lg transition duration-200"><h3 class="text-xl font-semibold text-indigo-600 mb-2">🎮 Best Game</h3><p class="text-gray-700">Most fun and well-executed game project.</p><p class="mt-3 font-bold text-lg">???</p></div>
+                 </div>
+                 <p class="text-center text-gray-600 mt-8">Specific prize details will be announced closer to the event.</p>
+             </section>
             <section class="bg-white p-6 rounded-lg shadow mt-12">
                 <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Meet the Judges/Facilitators</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 text-center">
-
-                    <div>
-                        <img src="lindow.jpg" alt="Judge 1 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Eric Lindow</h3> <p class="text-gray-600"></p> </div>
-
-                    <div>
-                        <img src="shruthy.jpg" alt="Judge 2 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Shruthy Lakshminarasimhan</h3> <p class="text-gray-600"></p> </div>
-
-                    <div>
-                        <img src="golanka.jpg" alt="Judge 3 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Stanley Golanka</h3> <p class="text-gray-600"></p> </div>
-
-                     <div>
-                        <img src="william.jpg" alt="Judge 4 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-1">William Kamfar</h3> <p class="text-gray-600"></p> </div>
-
-                    <div>
-                        <img src="jack.jpg" alt="Judge 5 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Jack Papalia</h3> <p class="text-gray-600"></p> </div>
-
-                    <div>
-                        <img src="sam.jpg" alt="Judge 6 Photo Placeholder" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Sam Rabinor</h3> <p class="text-gray-600"></p> </div>
-
+                    <div><img src="lindow.jpg" alt="Eric Lindow" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/128x128/cccccc/666666?text=EL';"><h3 class="text-xl font-semibold text-gray-800 mb-1">Eric Lindow</h3><p class="text-gray-600 text-sm">Facilitator</p></div>
+                    <div><img src="shruthy.jpg" alt="Shruthy Lakshminarasimhan" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/128x128/cccccc/666666?text=SL';"><h3 class="text-xl font-semibold text-gray-800 mb-1">Shruthy Lakshminarasimhan</h3><p class="text-gray-600 text-sm">Judge & Organizer</p></div>
+                    <div><img src="golanka.jpg" alt="Stanley Golanka" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/128x128/cccccc/666666?text=SG';"><h3 class="text-xl font-semibold text-gray-800 mb-1">Stanley Golanka</h3><p class="text-gray-600 text-sm">Judge</p></div>
+                    <div><img src="william.jpg" alt="William Kamfar" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/128x128/cccccc/666666?text=WK';"><h3 class="text-xl font-semibold text-gray-800 mb-1">William Kamfar</h3><p class="text-gray-600 text-sm">Facilitator & Organizer</p></div>
+                    <div><img src="jack.jpg" alt="Jack Papalia" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/128x128/cccccc/666666?text=JP';"><h3 class="text-xl font-semibold text-gray-800 mb-1">Jack Papalia</h3><p class="text-gray-600 text-sm">Facilitator & Organizer</p></div>
+                    <div><img src="sam.jpg" alt="Sam Rabinor" class="rounded-full w-32 h-32 mx-auto mb-4 object-cover shadow-md border-4 border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/128x128/cccccc/666666?text=SR';"><h3 class="text-xl font-semibold text-gray-800 mb-1">Sam Rabinor</h3><p class="text-gray-600 text-sm">Facilitator</p></div>
                 </div>
                 <p class="text-center text-gray-600 mt-8">Judges and Facilitators are subject to change!</p>
             </section>
         </main>
 
-    </div> <footer class="bg-gray-800 text-gray-400 mt-12 py-6">
+        <main id="page-register" class="page-content space-y-8 md:space-y-12">
+             <section id="register-form-section" class="bg-white p-6 rounded-lg shadow">
+                 <h2 class="text-center text-3xl md:text-4xl font-extrabold uppercase text-red-700 mb-4 tracking-wide" style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">
+                     We Want You
+                 </h2>
+                 <p class="text-center text-xl md:text-2xl font-semibold text-gray-700 mb-6">
+                     For the Trevor Hackathon!
+                 </p>
+                 <img src="WantYou.png" alt="We want you poster style image"
+                      class="mx-auto mb-8 rounded-lg shadow-md max-w-xs md:max-w-sm w-full"
+                      onerror="this.onerror=null; this.src='https://placehold.co/400x500/cccccc/666666?text=Recruitment+Image';">
+
+                 <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Register Now!</h3>
+                 <p class="text-gray-700 mb-6 text-center">Use the form below to sign up for the Trevor Hackathon on May 10th, 2025.</p>
+                 <div class="responsive-container responsive-container--google-form bg-gray-200 rounded-lg shadow">
+                     <iframe
+                         src="https://docs.google.com/forms/d/e/1FAIpQLSdQ7oIUdY8oNnaTzjocJwzyY_HlPIF-gunlAZgr9Tu5DuC2kQ/viewform?embedded=true"
+                         width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0"
+                         title="Registration Form">Loading…</iframe>
+                     <div class="placeholder-content" style="display: none;">
+                          <p class="p-4">Could not load registration form. Please try refreshing or <a href="https://docs.google.com/forms/d/e/1FAIpQLSdQ7oIUdY8oNnaTzjocJwzyY_HlPIF-gunlAZgr9Tu5DuC2kQ/viewform" target="_blank" class="text-orange-600 underline">open the form directly</a>.</p>
+                     </div>
+                 </div>
+             </section>
+        </main>
+    </div>
+
+    <footer class="bg-gray-800 text-gray-400 mt-12 py-6">
         <div class="container mx-auto px-4 text-center">
             <p>&copy; <span id="current-year"></span> Trevor Day School Hackathon. All rights reserved.</p>
             <p class="text-sm">Made with ❤️ by the Hackathon Team</p>
@@ -276,47 +414,81 @@
         // --- Page Navigation Logic ---
         const navLinks = document.querySelectorAll('.nav-link');
         const pageContents = document.querySelectorAll('.page-content');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const iconOpen = document.getElementById('icon-open');
+        const iconClose = document.getElementById('icon-close');
 
         function showPage(targetId) {
-            pageContents.forEach(page => {
-                page.style.display = 'none';
-            });
+            pageContents.forEach(page => { page.style.display = 'none'; });
             const targetPage = document.getElementById(targetId);
             if (targetPage) {
                 targetPage.style.display = 'block';
+                 const gameCanvas = document.getElementById('gameCanvas');
+                 if (gameCanvas) {
+                     const isHomePage = targetId === 'page-home';
+                     const gameContainer = document.getElementById('game-container');
+                     if(gameContainer) gameContainer.style.display = isHomePage ? 'block' : 'none';
+
+                     // Auto-start game if on home page and not already started
+                     if (isHomePage && typeof initGame === 'function' && gameState === 'uninitialized') {
+                         initGame();
+                     }
+                 }
+            } else {
+                console.error("Target page not found:", targetId);
+                document.getElementById('page-home').style.display = 'block';
+                 navLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('data-target') === 'page-home'); });
+                 return;
             }
-            navLinks.forEach(link => {
-                link.classList.toggle('active', link.getAttribute('data-target') === targetId);
-            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                 link.classList.toggle('active', link.getAttribute('data-target') === targetId);
+             });
         }
 
-        navLinks.forEach(link => {
+        document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(event) {
                 event.preventDefault();
                 const targetPageId = this.getAttribute('data-target');
                 showPage(targetPageId);
-                window.scrollTo(0, 0); // Scroll to top when changing main pages
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    iconOpen.classList.remove('hidden');
+                    iconClose.classList.add('hidden');
+                    mobileMenuButton.setAttribute('aria-expanded', 'false');
+                }
+                window.scrollTo(0, 0);
             });
         });
+
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', () => {
+                const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+                iconOpen.classList.toggle('hidden');
+                iconClose.classList.toggle('hidden');
+            });
+        }
 
         // --- Smooth Scroll for "Learn More" Button ---
         const learnMoreBtn = document.getElementById('learn-more-btn');
         if (learnMoreBtn) {
             learnMoreBtn.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent default anchor jump
-
-                const targetSection = document.getElementById('about-hackathon');
-                const header = document.querySelector('header.sticky'); // Select the sticky header
-                const headerHeight = header ? header.offsetHeight : 0; // Get header height, default to 0 if not found
-                const extraPadding = 20; // Pixels of space below the header
-
-                if (targetSection) {
-                    const targetPosition = targetSection.offsetTop - headerHeight - extraPadding;
-
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth' // Enable smooth scrolling
-                    });
+                if (this.hash !== "") {
+                    event.preventDefault();
+                    const targetId = this.hash;
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                         const header = document.querySelector('header.sticky');
+                         const headerHeight = header ? header.offsetHeight : 0;
+                         const extraPadding = 20;
+                         const targetRect = targetSection.getBoundingClientRect();
+                         const targetPosition = targetRect.top + window.scrollY - headerHeight - extraPadding;
+                         window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                    } else {
+                        console.warn("Learn More target section not found:", targetId);
+                    }
                 }
             });
         }
@@ -324,9 +496,272 @@
         // --- Footer Year ---
         document.getElementById('current-year').textContent = new Date().getFullYear();
 
-        // --- Initialize Page ---
-        showPage('page-home'); // Show home page by default
+        // --- Game Logic ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        // Play button variable removed
 
+        let player, bullets, asteroids, score, lives, gameState = 'uninitialized', keys = {}; // Start as uninitialized
+        let gameLoopRequestId;
+        let currentAsteroidSpeed;
+        let nextSpeedIncreaseScore;
+
+        // Game Settings - Adjusted
+        const bulletSpeed = 5;
+        const initialAsteroidSpeed = 0.8;
+        const playerMaxSpeed = 4;
+        const playerAcceleration = 0.1;
+        const playerRotationSpeed = 0.08;
+        const playerFriction = 0.98;
+        const playerShootCooldown = 18;
+        const asteroidSpawnRate = 100;
+        let asteroidSpawnTimer = 0;
+        const asteroidSpeedIncreaseAmount = 0.1;
+        const scoreThresholdForSpeedIncrease = 300;
+
+        function Player(x, y) { /* ... Player definition ... */
+            this.x = x; this.y = y; this.width = 24; this.height = 24; this.angle = -Math.PI / 2;
+            this.rotationSpeed = playerRotationSpeed; this.speed = 0; this.maxSpeed = playerMaxSpeed;
+            this.friction = playerFriction; this.acceleration = playerAcceleration; this.lives = 3;
+            this.shootCooldown = playerShootCooldown; this.shootTimer = 0;
+        }
+        Player.prototype.update = function() { /* ... Player update logic with WASD/F ... */
+            const turnDirection = (keys['a'] ? -1 : 0) + (keys['d'] ? 1 : 0); this.angle += turnDirection * this.rotationSpeed;
+            if (keys['w']) { this.speed += this.acceleration; if (this.speed > this.maxSpeed) this.speed = this.maxSpeed; } else { this.speed *= this.friction; }
+            this.x += this.speed * Math.cos(this.angle); this.y += this.speed * Math.sin(this.angle);
+            if (this.x < 0) this.x = canvas.width; if (this.x > canvas.width) this.x = 0; if (this.y < 0) this.y = canvas.height; if (this.y > canvas.height) this.y = 0;
+            if (this.shootTimer > 0) this.shootTimer--; if (keys['f'] && this.shootTimer <= 0) { this.shoot(); this.shootTimer = this.shootCooldown; }
+        };
+        Player.prototype.shoot = function() { bullets.push(new Bullet(this.x, this.y, this.angle)); };
+        Player.prototype.draw = function() { /* ... Player drawing ... */
+            ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle + Math.PI / 2); ctx.fillStyle = '#f0f0f0'; ctx.beginPath(); ctx.moveTo(0, -this.height / 2); ctx.lineTo(-this.width / 2, this.height / 2); ctx.lineTo(this.width / 2, this.height / 2); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#ffc0cb'; ctx.fillRect(-this.width/2 + 1, this.height/2 - 6, 3, 3); ctx.fillRect(this.width/2 - 4, this.height/2 - 6, 3, 3); ctx.restore();
+        };
+
+        function Bullet(x, y, angle) { /* ... Bullet definition ... */
+             this.x = x; this.y = y; this.radius = 2; this.speed = bulletSpeed; this.angle = angle;
+        }
+        Bullet.prototype.update = function() { /* ... Bullet update ... */
+            this.x += this.speed * Math.cos(this.angle); this.y += this.speed * Math.sin(this.angle);
+        };
+        Bullet.prototype.draw = function() { /* ... Bullet drawing ... */
+            ctx.fillStyle = 'red'; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill();
+        };
+
+        // Asteroid - Takes current speed
+        function Asteroid(x, y, radius, speed) {
+            this.x = x || Math.random() * canvas.width;
+            this.y = y || Math.random() * canvas.height;
+            this.radius = radius || Math.random() * 20 + 15;
+            this.speed = speed; // Use passed speed
+            this.angle = Math.random() * Math.PI * 2;
+            this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+        }
+        Asteroid.prototype.update = function() { /* ... Asteroid update ... */
+            this.x += this.speed * Math.cos(this.angle); this.y += this.speed * Math.sin(this.angle);
+             if (this.x + this.radius < 0) this.x = canvas.width + this.radius; if (this.x - this.radius > canvas.width) this.x = 0 - this.radius; if (this.y + this.radius < 0) this.y = canvas.height + this.radius; if (this.y - this.radius > canvas.height) this.y = 0 - this.radius;
+        };
+        Asteroid.prototype.draw = function() { /* ... Asteroid drawing ... */
+             ctx.fillStyle = this.color; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 0.5; for(let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(this.x + (Math.random()-0.5)*this.radius*1.5, this.y + (Math.random()-0.5)*this.radius*1.5); ctx.lineTo(this.x + (Math.random()-0.5)*this.radius*1.5, this.y + (Math.random()-0.5)*this.radius*1.5); ctx.stroke(); }
+        };
+
+        function checkCollisions() {
+            // Player vs Asteroids
+            asteroids.forEach((asteroid, aIndex) => {
+                if (!player) return;
+                const dx = player.x - asteroid.x;
+                const dy = player.y - asteroid.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < player.width / 2 + asteroid.radius) {
+                    player.lives--;
+                    asteroids.splice(aIndex, 1);
+                    if (player.lives <= 0) {
+                         gameState = 'gameOver';
+                         // Removed body attribute update - not needed now
+                    }
+                }
+            });
+
+            // Bullets vs Asteroids
+            bullets.forEach((bullet, bIndex) => {
+                asteroids.forEach((asteroid, aIndex) => {
+                    if (!bullets[bIndex] || !asteroids[aIndex]) return;
+                    const dx = bullet.x - asteroid.x;
+                    const dy = bullet.y - asteroid.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < bullet.radius + asteroid.radius) {
+                        score += Math.floor(50 - asteroid.radius);
+                        asteroids.splice(aIndex, 1);
+                        bullets.splice(bIndex, 1);
+                        if (score >= nextSpeedIncreaseScore) {
+                            currentAsteroidSpeed += asteroidSpeedIncreaseAmount;
+                            nextSpeedIncreaseScore += scoreThresholdForSpeedIncrease;
+                        }
+                        return; // Exit inner loop for this bullet
+                    }
+                });
+            });
+        }
+
+        function setupGame() {
+            if (!canvas || !ctx) return;
+            player = new Player(canvas.width / 2, canvas.height / 2);
+            bullets = [];
+            asteroids = [];
+            score = 0;
+            lives = player.lives;
+            currentAsteroidSpeed = initialAsteroidSpeed;
+            nextSpeedIncreaseScore = scoreThresholdForSpeedIncrease;
+            gameState = 'playing'; // Set state to playing immediately
+            keys = {};
+            asteroidSpawnTimer = 0;
+             for (let i = 0; i < 5; i++) {
+                 asteroids.push(new Asteroid(null, null, null, currentAsteroidSpeed));
+             }
+             console.log("Game Setup Complete. Initial Asteroid Speed:", currentAsteroidSpeed);
+             // Ensure listeners are active
+             window.addEventListener('keydown', handleKeyDown);
+             window.addEventListener('keyup', handleKeyUp);
+        }
+
+        function updateGame() {
+            if (gameState !== 'playing' || !player) return;
+
+            player.update();
+            bullets = bullets.filter(b => {
+                b.update();
+                return b.x > 0 && b.x < canvas.width && b.y > 0 && b.y < canvas.height;
+            });
+            asteroids.forEach(a => a.update());
+
+            asteroidSpawnTimer++;
+            if (asteroidSpawnTimer >= asteroidSpawnRate) {
+                 asteroids.push(new Asteroid(null, null, null, currentAsteroidSpeed));
+                 asteroidSpawnTimer = 0;
+            }
+
+            checkCollisions();
+             lives = player.lives;
+             if (lives <= 0) {
+                 gameState = 'gameOver';
+                 // Removed body attribute update
+             }
+        }
+
+        // drawStartScreen function removed
+
+        function drawGame() {
+             if (!ctx) return;
+
+             // Removed check for 'uninitialized' state
+
+            // --- Draw active game or game over screen ---
+            ctx.fillStyle = '#1a1a2e'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (player) player.draw();
+            bullets.forEach(b => b.draw());
+            asteroids.forEach(a => a.draw());
+            ctx.fillStyle = 'white'; ctx.font = '16px "Press Start 2P"'; ctx.textAlign = 'left'; ctx.fillText(`Score: ${score}`, 10, 25);
+            ctx.textAlign = 'right'; ctx.fillText(`Lives: ${lives}`, canvas.width - 10, 25);
+
+            if (gameState === 'gameOver') {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
+                ctx.fillStyle = 'red'; ctx.font = '24px "Press Start 2P"'; ctx.textAlign = 'center'; ctx.fillText('GAME OVER!', canvas.width / 2, canvas.height / 2);
+                ctx.fillStyle = 'white'; ctx.font = '14px "Press Start 2P"'; ctx.fillText('Press R to Restart', canvas.width / 2, canvas.height / 2 + 30);
+            }
+        }
+
+        function gameLoop() {
+             if (!canvas || !ctx) {
+                 console.error("Canvas or context lost, stopping loop.");
+                 cancelAnimationFrame(gameLoopRequestId);
+                 gameLoopRequestId = null;
+                 return;
+             }
+            // Update game state based on current gameState
+            if (gameState === 'playing') {
+                updateGame();
+            }
+            // Always draw (draws game or game over)
+            drawGame();
+
+            // Continue the loop
+            gameLoopRequestId = requestAnimationFrame(gameLoop);
+        }
+
+        function handleKeyDown(e) {
+             const gameKeys = ['w', 'a', 's', 'd', 'f', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '];
+             const keyLower = e.key.toLowerCase();
+             if ((gameState === 'playing' || gameState === 'gameOver') && gameKeys.includes(keyLower)) {
+                 e.preventDefault();
+             }
+             keys[keyLower] = true;
+             if (gameState === 'gameOver' && keyLower === 'r') {
+                 setupGame(); // Restart the game
+             }
+        }
+        function handleKeyUp(e) {
+            keys[e.key.toLowerCase()] = false;
+        }
+
+        function initGame() {
+             if (!canvas || !ctx) { console.error("Game canvas/context not found!"); return; }
+             // Prevent re-initialization if already playing or game over
+             if (gameState === 'playing' || gameState === 'gameOver') {
+                 console.log("Game already initialized.");
+                 return;
+             }
+             console.log("Initializing/Resetting Game...");
+             setupGame(); // Setup game state and variables
+             // Add listeners only once (or ensure they are added)
+             window.removeEventListener('keydown', handleKeyDown);
+             window.removeEventListener('keyup', handleKeyUp);
+             window.addEventListener('keydown', handleKeyDown);
+             window.addEventListener('keyup', handleKeyUp);
+
+             // Start the loop if it's not already running
+             if (!gameLoopRequestId) {
+                 gameLoopRequestId = requestAnimationFrame(gameLoop);
+                 console.log("Game loop started.");
+             }
+        }
+
+        // --- Event Listeners ---
+        // Play Button Listener Removed
+
+        // Fullscreen Button Listener
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (fullscreenBtn && canvas) {
+            fullscreenBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!document.fullscreenElement) {
+                    canvas.requestFullscreen({ navigationUI: "hide" }).catch(err => {
+                        console.error(`Fullscreen request failed: ${err.message} (${err.name})`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+        } else {
+             if (!fullscreenBtn) console.error("Fullscreen button not found");
+             if (!canvas) console.error("Canvas not found for fullscreen");
+        }
+
+        // Handle exiting fullscreen (e.g., pressing Esc)
+        document.addEventListener('fullscreenchange', () => {
+            // Optional: Add logic if needed when fullscreen state changes
+        });
+
+
+        // --- Initial Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('page-home');
+            // Automatically initialize the game when the home page is ready
+            // Ensure canvas/ctx are available before initializing
+            if (canvas && ctx) {
+                initGame();
+            } else {
+                console.error("DOM Loaded but canvas/ctx not ready for initGame.");
+            }
+        });
     </script>
 
 </body>
